@@ -1,0 +1,77 @@
+---
+
+- name: Include fichero requirement.yml
+  ansible.builtin.include_tasks:
+    file: requirement.yml
+
+- name: Include variables de fichero vault.yml
+  ansible.builtin.include_vars:
+    file: vault.yml
+  no_log: true
+
+- name: Crear Segurity Group
+  amazon.aws.ec2_security_group:
+    name: "{{ item.name }}"
+    description: "Security Group para instancia {{ item.name }}"
+    vpc_id: "{{ item.vpc_id }}"
+    region: "{{ region }}"
+    rules:
+      - proto: tcp
+        ports: "{{ item.ports }}"
+        cidr_ip: "{{ item.cidr_ip }}"
+        rule_desc: Ingress TCP
+      - proto: icmp
+        ports: -1
+        cidr_ip: "{{ item.cidr_ip }}"
+        rule_desc: Ingress ICMP
+    access_key: "{{ access_key }}"
+    secret_key: "{{ secret_key }}"
+    state: present
+  loop: "{{ var_sg }}"
+  no_log: true
+  register: sg_ansible
+
+- name: Debug
+  ansible.builtin.debug:
+    var: sg_ansible
+
+- name: Crear instancia EC2
+  amazon.aws.ec2_instance:
+    name: "{{ item.name }}"
+    region: "{{ region }}"
+    key_name: "{{ item.key_name }}"
+    vpc_subnet_id: "{{ item.vpc_subnet_id }}"
+    instance_type: "{{ item.instance_type }}"
+    security_group: "{{ sg_ansible.results[0].group_id }}"
+    network:
+      assign_public_ip: "{{ item.assign_public_ip }}"
+    image_id: "{{ item.image_id }}"
+    tags:
+      Environment: "{{ item.environment }}"
+    access_key: "{{ access_key }}"
+    secret_key: "{{ secret_key }}"
+    state: present
+  loop: "{{ var_instance }}"
+  no_log: true
+  register: instance
+
+- name: Debug instance
+  ansible.builtin.debug:
+    var: instance
+
+- name: Mensaje con IP Publica
+  ansible.builtin.debug:
+    msg: "{{ instance.results[item].item.name }}: {{ instance.results[item].instances[0].public_ip_address }}"
+  loop: "{{ range(0,instance.results | length) }}"
+
+- name: Mensaje con DNS Publica
+  ansible.builtin.debug:
+    msg: "{{ instance.results[item].item.name }}: {{ instance.results[item].instances[0].public_dns_name }}"
+  loop: "{{ range(0,instance.results | length) }}"
+
+- name: Mensaje con IP Publica
+  ansible.builtin.debug:
+    msg: "{{ instance.results[item].item.name }}: {{ instance.results[item].instances[0].private_ip_address }}"
+  loop: "{{ range(0,instance.results | length) }}"  
+
+...

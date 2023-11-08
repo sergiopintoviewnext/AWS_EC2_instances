@@ -1,0 +1,30 @@
+---
+
+region: eu-west-3
+
+var_sg: 
+  - { name: sg_ansible,
+      vpc_id: ,
+      ports: [80, 22],
+      cidr_ip: 0.0.0.0/0
+    }
+
+var_instance: 
+  - { name: Rhel_9,
+      image_id: ami-0ba31a65428ab4d7c,
+      key_name: keys_work,
+      vpc_subnet_id: ,
+      instance_type: t2.micro,
+      assign_public_ip: true,
+      environment: DEV
+    }
+  - { name: Ubuntu,
+      image_id: ami-00983e8a26e4c9bd9,
+      key_name: keys_work,
+      vpc_subnet_id: ,
+      instance_type: t2.micro,
+      assign_public_ip: true,
+      environment: DEV
+    }    
+
+...
