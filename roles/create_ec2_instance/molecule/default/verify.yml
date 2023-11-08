@@ -1,5 +1,4 @@
 ---
-# This is an example playbook to execute Ansible tests.
 
 - name: Verify
   hosts: all
@@ -58,3 +57,5 @@
         msg: "El security group '{{ sg_name }}' no está creado"
       when: assert_sg.skipped
       failed_when: assert_sg.skipped
+
+...

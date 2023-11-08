@@ -1,10 +1,54 @@
 ---
-# This is an example playbook to execute Ansible tests.
 
 - name: Verify
   hosts: all
   gather_facts: false
+  vars:
+    instance_name: [Instancia_Rhel_1, Instancia_Ubuntu_1]
+    sg_name: sg_ansible
+    region: eu-west-3
+    access_key: 
+    secret_key: 
   tasks:
-  - name: Example assertion
-    ansible.builtin.assert:
-      that: true
+    - name: Obtener información de instancias
+      amazon.aws.ec2_instance_info:
+        region: "{{ region }}"
+        filters:
+          "tag:Name": "{{ item }}"
+        access_key: "{{ access_key }}"
+        secret_key: "{{ secret_key }}"
+      loop: "{{ instance_name }}"
+      register: instance_info
+
+    - name: Debug instance_info
+      ansible.builtin.debug:
+        var: instance_info
+
+    - name: Verificar si la instancia está destruida
+      ansible.builtin.assert:
+        that: item.instances[0].state.name == "terminated"
+        success_msg: "{{ item.item }} esta en estado {{ item.instances[0].state.name }}"
+        fail_msg: "{{ item.item }} esta en estado {{ item.instances[0].state.name }}"
+      loop: "{{ instance_info.results }}"
+
+    - name: Obtener información de security goup creado
+      amazon.aws.ec2_security_group_info:
+        region: "{{ region }}"
+        filters:
+          group_name: "{{ sg_name }}"
+        access_key: "{{ access_key }}"
+        secret_key: "{{ secret_key }}"
+      register: sg_info
+
+    - name: Debug instance_info
+      ansible.builtin.debug:
+        var: sg_info
+
+    - name: Verificar si el security group está creado
+      ansible.builtin.assert:
+        that: not sg_info.security_groups
+        success_msg: "El security group '{{ sg_name }}' no está creado"
+        fail_msg: "El security group '{{ sg_name }}' está creado"
+      register: assert_sg
+
+...
