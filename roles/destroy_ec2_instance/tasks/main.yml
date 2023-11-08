@@ -1,0 +1,31 @@
+---
+
+- name: Include fichero requirement.yml
+  ansible.builtin.include_tasks:
+    file: requirement.yml
+
+- name: Include variables de fichero vault.yml
+  ansible.builtin.include_vars:
+    file: vault.yml
+  no_log: true
+
+- name: Destroy instancias EC2
+  amazon.aws.ec2_instance:
+    name: "{{ item }}"
+    region: "{{ region }}"
+    access_key: "{{ access_key }}"
+    secret_key: "{{ secret_key }}"
+    state: absent
+  loop: "{{ instance_name }}"
+  no_log: true
+
+- name: Destroy Segurity Group
+  amazon.aws.ec2_security_group:
+    name: "{{ sg_name }}"
+    region: "{{ region }}"
+    access_key: "{{ access_key }}"
+    secret_key: "{{ secret_key }}"
+    state: absent
+  no_log: true
+
+...

@@ -1,0 +1,9 @@
+---
+
+region: eu-west-3
+
+instance_name: [Rhel_9, Ubuntu]
+
+sg_name: sg_ansible
+
+...

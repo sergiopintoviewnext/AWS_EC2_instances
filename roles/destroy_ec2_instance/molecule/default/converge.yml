@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include destroy_ec2_instance"
+      include_role:
+        name: "destroy_ec2_instance"
