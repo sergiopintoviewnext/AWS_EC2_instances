@@ -12,7 +12,7 @@
 - name: Crear Segurity Group
   amazon.aws.ec2_security_group:
     name: "{{ item.name }}"
-    description: "Security Group para instancia {{ item.name }}"
+    description: "Security Group para instancias creadas mediante Ansible"
     vpc_id: "{{ item.vpc_id }}"
     region: "{{ region }}"
     rules:
@@ -29,11 +29,11 @@
     state: present
   loop: "{{ var_sg }}"
   no_log: true
-  register: sg_ansible
+  register: security_group
 
 - name: Debug
   ansible.builtin.debug:
-    var: sg_ansible
+    var: security_group
 
 - name: Crear instancia EC2
   amazon.aws.ec2_instance:
@@ -42,7 +42,7 @@
     key_name: "{{ item.key_name }}"
     vpc_subnet_id: "{{ item.vpc_subnet_id }}"
     instance_type: "{{ item.instance_type }}"
-    security_group: "{{ sg_ansible.results[0].group_id }}"
+    security_group: "{{ security_group.results[0].group_id }}"
     network:
       assign_public_ip: "{{ item.assign_public_ip }}"
     image_id: "{{ item.image_id }}"

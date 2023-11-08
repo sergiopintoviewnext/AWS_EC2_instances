@@ -10,7 +10,7 @@ var_sg:
     }
 
 var_instance: 
-  - { name: Rhel_9,
+  - { name: Instancia_Rhel_1,
       image_id: ami-0ba31a65428ab4d7c,
       key_name: keys_work,
       vpc_subnet_id: ,
@@ -18,7 +18,7 @@ var_instance:
       assign_public_ip: true,
       environment: DEV
     }
-  - { name: Ubuntu,
+  - { name: Instancia_Ubuntu_1,
       image_id: ami-00983e8a26e4c9bd9,
       key_name: keys_work,
       vpc_subnet_id: ,
