@@ -1,0 +1,10 @@
+---
+
+- name: Playbook to execute rol create_ec2_instance
+  hosts: localhost
+  gather_facts: true
+  become: true
+  roles:
+    - role: create_ec2_instance
+
+...

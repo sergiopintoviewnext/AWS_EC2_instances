@@ -1,0 +1,10 @@
+---
+
+- name: Playbook to execute rol destroy_ec2_instance
+  hosts: localhost
+  gather_facts: true
+  become: true
+  roles:
+    - role: destroy_ec2_instance
+
+...
