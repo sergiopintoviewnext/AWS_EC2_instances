@@ -4,7 +4,6 @@
   ansible.builtin.package:
     name: python3-pip
     state: present
-    update_cache: true
 
 - name: Install boto3 y botocore
   ansible.builtin.pip:
